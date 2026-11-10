@@ -1,0 +1,519 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SchoolShelf | Textbook Library</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+body {
+    background: #fff9ed;
+    color: #263238;
+}
+
+header {
+    background: #205c45;
+    color: white;
+    text-align: center;
+    padding: 42px 20px;
+    border-bottom: 7px solid #f6c453;
+}
+
+header h1 {
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+header p {
+    color: #e1f2df;
+}
+
+.container {
+    max-width: 1150px;
+    margin: 35px auto;
+    padding: 0 22px;
+}
+
+.intro {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.intro h2 {
+    color: #205c45;
+    margin-bottom: 10px;
+}
+
+.intro p {
+    color: #69737d;
+    line-height: 1.6;
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 25px 0 18px;
+}
+
+#search {
+    display: block;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto 18px;
+    padding: 14px 16px;
+    border: 2px solid #d9e4d9;
+    border-radius: 10px;
+    font-size: 15px;
+    outline: none;
+    background: white;
+}
+
+#search:focus {
+    border-color: #205c45;
+}
+
+button {
+    border: none;
+    border-radius: 9px;
+    padding: 13px 24px;
+    background: #205c45;
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #174632;
+}
+
+button:disabled {
+    opacity: 0.65;
+    cursor: wait;
+}
+
+#message {
+    min-height: 28px;
+    margin: 18px 0 24px;
+    text-align: center;
+    color: #205c45;
+    font-weight: 600;
+}
+
+.book-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+}
+
+.book-card {
+    background: white;
+    padding: 23px;
+    border-radius: 14px;
+    border: 1px solid #eee4d3;
+    border-bottom: 5px solid #f6c453;
+    box-shadow: 0 5px 16px #2632380c;
+    transition: transform 0.2s;
+    overflow-wrap: anywhere;
+}
+
+.book-card:hover {
+    transform: translateY(-4px);
+}
+
+.book-icon {
+    width: 62px;
+    height: 68px;
+    display: grid;
+    place-items: center;
+    background: #fff0c5;
+    border-radius: 10px;
+    font-size: 33px;
+    margin-bottom: 16px;
+}
+
+.book-card h3 {
+    font-size: 19px;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+.subject {
+    display: inline-block;
+    background: #e5f2ff;
+    color: #245b91;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+.book-card p {
+    color: #69737d;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.book-info {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid #eee9df;
+    color: #69737d;
+    font-size: 12px;
+}
+
+.grade-11 .book-card {
+    border-bottom-color: #76a9f5;
+}
+
+.grade-11 .book-icon {
+    background: #e5edff;
+}
+
+.grade-12 .book-card {
+    border-bottom-color: #f19a72;
+}
+
+.grade-12 .book-icon {
+    background: #ffeadf;
+}
+
+.grade-label {
+    grid-column: 1 / -1;
+    padding: 14px 18px;
+    border-left: 6px solid #205c45;
+    background: #e2f0e5;
+    color: #205c45;
+    border-radius: 9px;
+    font-size: 21px;
+}
+
+.grade-11.grade-label {
+    border-color: #3874c8;
+    background: #e6efff;
+    color: #28599b;
+}
+
+.grade-12.grade-label {
+    border-color: #df744b;
+    background: #ffebdf;
+    color: #a64f2f;
+}
+
+.empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 30px;
+    border-radius: 12px;
+    background: white;
+    color: #69737d;
+}
+
+.spinner {
+    display: inline-block;
+    width: 17px;
+    height: 17px;
+    border: 3px solid #d8e8dc;
+    border-top-color: #205c45;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+    margin-right: 8px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+footer {
+    background: #205c45;
+    color: #e1f2df;
+    text-align: center;
+    padding: 25px 15px;
+    margin-top: 45px;
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+@media (max-width: 800px) {
+    .book-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 550px) {
+    header h1 { font-size: 29px; }
+
+    .book-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .controls button {
+        width: 100%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>📚 SchoolShelf</h1>
+    <p>Your classroom companion for learning and discovery</p>
+</header>
+
+<main class="container">
+
+    <section class="intro">
+        <h2>🎒 Explore Your Textbook Library</h2>
+        <p>Find school books for Classes 10, 11 and 12.</p>
+    </section>
+
+    <div class="controls">
+        <button id="loadBooks">📖 Load Books</button>
+    </div>
+
+    <input
+        type="search"
+        id="search"
+        placeholder="🔍 Search by book, subject, or class..."
+        aria-label="Search textbooks"
+    >
+
+    <p id="message" role="status" aria-live="polite">
+        Click "Load Books" to display the textbooks.
+    </p>
+
+    <section class="book-grid" id="bookList" aria-label="Textbook list"></section>
+
+</main>
+
+<footer>
+    <p>📚 SchoolShelf — Learn Something New Every Day!</p>
+    <p>Textbook Library | Classes 10, 11 &amp; 12</p>
+</footer>
+
+<script>
+const books = [
+    {
+        grade: 10, title: "Mathematics", subject: "Mathematics",
+        icon: "📐",
+        description: "Explore algebra, geometry, trigonometry, statistics and probability."
+    },
+    {
+        grade: 10, title: "Science", subject: "Science",
+        icon: "🔬",
+        description: "Learn about chemical reactions, life processes, electricity and light."
+    },
+    {
+        grade: 10, title: "Social Science", subject: "Social Studies",
+        icon: "🌍",
+        description: "Study history, geography, democratic politics and economics."
+    },
+    {
+        grade: 10, title: "English", subject: "Language",
+        icon: "📖",
+        description: "Improve grammar, reading comprehension, writing, poetry and prose."
+    },
+    {
+        grade: 10, title: "Computer Applications", subject: "Computer Studies",
+        icon: "💻",
+        description: "Explore computer fundamentals, digital literacy and programming."
+    },
+    {
+        grade: 10, title: "Second Language", subject: "Language",
+        icon: "🗣️",
+        description: "Develop vocabulary, grammar, writing and communication skills."
+    },
+
+    {
+        grade: 11, title: "Mathematics", subject: "Mathematics",
+        icon: "🧮",
+        description: "Discover sets, functions, trigonometry and coordinate geometry."
+    },
+    {
+        grade: 11, title: "Physics", subject: "Science Stream",
+        icon: "⚛️",
+        description: "Understand motion, work, energy, gravitation and thermodynamics."
+    },
+    {
+        grade: 11, title: "Chemistry", subject: "Science Stream",
+        icon: "🧪",
+        description: "Study atomic structure, chemical bonding and the periodic table."
+    },
+    {
+        grade: 11, title: "Biology", subject: "Science Stream",
+        icon: "🧬",
+        description: "Explore cells, living organisms, plant physiology and human physiology."
+    },
+    {
+        grade: 11, title: "Economics", subject: "Commerce / Humanities",
+        icon: "💰",
+        description: "Learn statistics, demand, supply and economic concepts."
+    },
+    {
+        grade: 11, title: "History", subject: "Humanities",
+        icon: "📜",
+        description: "Examine early societies, historical sources and past civilizations."
+    },
+
+    {
+        grade: 12, title: "Mathematics", subject: "Mathematics",
+        icon: "📊",
+        description: "Practice matrices, determinants, integrals and probability."
+    },
+    {
+        grade: 12, title: "Physics", subject: "Science Stream",
+        icon: "🔭",
+        description: "Explore electricity, magnetism, optics and modern physics."
+    },
+    {
+        grade: 12, title: "Chemistry", subject: "Science Stream",
+        icon: "🧫",
+        description: "Study solutions, electrochemistry, organic chemistry and biomolecules."
+    },
+    {
+        grade: 12, title: "Biology", subject: "Science Stream",
+        icon: "🧬",
+        description: "Learn genetics, evolution, biotechnology and ecology."
+    },
+    {
+        grade: 12, title: "Accountancy", subject: "Commerce Stream",
+        icon: "📈",
+        description: "Understand partnership accounts, company accounts and financial statements."
+    },
+    {
+        grade: 12, title: "Political Science", subject: "Humanities",
+        icon: "🏛️",
+        description: "Study world politics, governance and Indian political institutions."
+    }
+];
+
+const bookList = document.getElementById("bookList");
+const message = document.getElementById("message");
+const search = document.getElementById("search");
+const loadButton = document.getElementById("loadBooks");
+
+let loaded = false;
+let loading = false;
+
+function displayBooks(list) {
+    bookList.replaceChildren();
+
+    if (list.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "📚 No matching books found. Try another search.";
+        bookList.appendChild(empty);
+        message.textContent = "0 matching books found.";
+        return;
+    }
+
+    let currentGrade = null;
+
+    list.forEach(book => {
+        if (book.grade !== currentGrade) {
+            currentGrade = book.grade;
+
+            const label = document.createElement("h2");
+            label.className = "grade-label" +
+                (book.grade === 11 ? " grade-11" :
+                 book.grade === 12 ? " grade-12" : "");
+
+            label.textContent = "🎓 Class " + book.grade + " Books";
+            bookList.appendChild(label);
+        }
+
+        const card = document.createElement("article");
+        card.className = "book-card" +
+            (book.grade === 11 ? " grade-11" :
+             book.grade === 12 ? " grade-12" : "");
+
+        const icon = document.createElement("div");
+        icon.className = "book-icon";
+        icon.textContent = book.icon;
+
+        const title = document.createElement("h3");
+        title.textContent = book.title;
+
+        const subject = document.createElement("span");
+        subject.className = "subject";
+        subject.textContent = book.subject;
+
+        const description = document.createElement("p");
+        description.textContent = book.description;
+
+        const info = document.createElement("div");
+        info.className = "book-info";
+        info.textContent = "Class " + book.grade + " · Textbook";
+
+        card.append(icon, title, subject, description, info);
+        bookList.appendChild(card);
+    });
+
+    message.textContent = list.length + " book(s) displayed.";
+}
+
+function filterBooks() {
+    if (!loaded || loading) return;
+
+    const query = search.value.trim().toLowerCase();
+
+    const filtered = books.filter(book => {
+        const searchable = [
+            book.title,
+            book.subject,
+            book.grade.toString(),
+            "class " + book.grade,
+            book.description
+        ].join(" ").toLowerCase();
+
+        return searchable.includes(query);
+    });
+
+    displayBooks(filtered);
+}
+
+loadButton.addEventListener("click", () => {
+    if (loading) return;
+
+    loading = true;
+    loadButton.disabled = true;
+    loadButton.textContent = "Loading...";
+    message.innerHTML = '<span class="spinner"></span>Loading textbooks...';
+    bookList.replaceChildren();
+
+    // Simulated loading effect for locally stored books.
+    window.setTimeout(() => {
+        loaded = true;
+        loading = false;
+
+        loadButton.disabled = false;
+        loadButton.textContent = "📖 Reload Books";
+
+        filterBooks();
+    }, 700);
+});
+
+search.addEventListener("input", () => {
+    if (!loaded) {
+        message.textContent = "Click Load Books before searching.";
+        return;
+    }
+
+    filterBooks();
+});
+</script>
+
+</body>
+</html>
